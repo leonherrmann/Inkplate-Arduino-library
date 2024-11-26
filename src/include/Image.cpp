@@ -73,10 +73,15 @@ bool Image::drawImage(const String path, int x, int y, bool dither, bool invert)
  */
 bool Image::drawImage(const char *path, int x, int y, bool dither, bool invert)
 {
+    Serial.print("Trying to draw: ");
+    Serial.print(path);
     // Try to get the file extension.
     char _fileExtension[5];
-    if (!getFileExtension((char *)path, _fileExtension))
-        return false;
+    if (!getFileExtension((char *)path, _fileExtension)){
+        Serial.print("No extension for url: ");
+        Serial.print(path);
+        return drawPngFromWeb(path, x, y, dither, invert); 
+    }
 
     if (strncmp(path, "http://", 7) == 0 || strncmp(path, "https://", 8) == 0)
     {
@@ -86,6 +91,9 @@ bool Image::drawImage(const char *path, int x, int y, bool dither, bool invert)
             return drawJpegFromWeb(path, x, y, dither, invert);
         if (strstr(_fileExtension, "png") != NULL)
             return drawPngFromWeb(path, x, y, dither, invert);
+        Serial.print("Could not draw image from url: ");
+        Serial.print(path);
+        return drawJpegFromWeb(path, x, y, dither, invert); 
     }
     else
     {
