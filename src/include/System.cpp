@@ -111,16 +111,8 @@ double System::readBattery()
     int state = digitalReadIO(9, IO_INT_ADDR);
     pinModeInternal(IO_INT_ADDR, ioRegsInt, 9, OUTPUT);
 
-    // If the input is pulled high, it's PMOS only.
-    // If it's pulled low, it's PMOS and NMOS.
-    if (state)
-    {
-        digitalWriteInternal(IO_INT_ADDR, ioRegsInt, 9, LOW);
-    }
-    else
-    {
-        digitalWriteInternal(IO_INT_ADDR, ioRegsInt, 9, HIGH);
-    }
+    digitalWriteInternal(IO_INT_ADDR, ioRegsInt, 9, HIGH);
+
 
     // Wait a little bit after a MOSFET enable.
     delay(5);
@@ -130,14 +122,8 @@ double System::readBattery()
     int adc = analogReadMilliVolts(35);
 
     // Turn off the MOSFET (and voltage divider).
-    if (state)
-    {
-        digitalWriteInternal(IO_INT_ADDR, ioRegsInt, 9, HIGH);
-    }
-    else
-    {
-        digitalWriteInternal(IO_INT_ADDR, ioRegsInt, 9, LOW);
-    }
+    digitalWriteInternal(IO_INT_ADDR, ioRegsInt, 9, LOW);
+
 
     // Calculate the voltage at the battery terminal (voltage is divided in half by voltage divider).
     return (double(adc) * 2.0 / 1000);
